@@ -1,27 +1,27 @@
 package com.example.myquiz2;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.List;
-import java.util.Random;
 
-public class CatGridAdapter extends BaseAdapter {
+public class SetsAdapter extends BaseAdapter {
 
-    private List<String> catList;
+    Integer setsList;
 
-    public CatGridAdapter(List<String> catList){
-        this.catList = catList;
+    public SetsAdapter(Integer setsList ){
+        this.setsList = setsList;
     }
+
 
     @Override
     public int getCount() {
-        return catList.size();
+        return setsList;
     }
 
     @Override
@@ -36,9 +36,12 @@ public class CatGridAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
+
         View view;
-        if(convertView == null){
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cat_item_layout,parent,false);
+
+        if (convertView == null){
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.set_item_layout,parent,false);
         }else {
             view = convertView;
         }
@@ -46,21 +49,14 @@ public class CatGridAdapter extends BaseAdapter {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(parent.getContext(),SetsActivity.class);
-                intent.putExtra("CATEGORY",catList.get(position));
+                Intent intent = new Intent(parent.getContext(),QuestionActivity.class);
                 parent.getContext().startActivity(intent);
+
             }
         });
 
+        ((TextView) view.findViewById(R.id.txv_set_No)).setText(String.valueOf(position+1));
 
-
-        ((TextView) view.findViewById(R.id.txv_cat_name)).setText(catList.get(position));
-
-        Random rnd = new Random();
-
-        int color = Color.argb(255,rnd.nextInt(255),rnd.nextInt(255),rnd.nextInt(255));
-
-        view.setBackgroundColor(color);
 
         return view;
     }

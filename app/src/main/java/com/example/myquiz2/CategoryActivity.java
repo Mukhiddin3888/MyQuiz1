@@ -1,10 +1,12 @@
 package com.example.myquiz2;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.GridView;
 
 import java.util.ArrayList;
@@ -29,16 +31,26 @@ public class CategoryActivity extends AppCompatActivity {
 
         List<String> catList = new ArrayList<>();
         catList.add("category 1");
-        catList.add("category 2");
-        catList.add("category 3");
-        catList.add("category 4");
-        catList.add("category 5");
-        catList.add("category 6");
+        catList.add("Math 2");
+        catList.add("Geography 3");
+        catList.add("category3 4");
+        catList.add("History 5");
+        catList.add("category5 6");
 
 
         CatGridAdapter adapter = new CatGridAdapter(catList);
         gridView.setAdapter(adapter);
 
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home){
+            CategoryActivity.this.finish();
+        }
+
+
+        return super.onOptionsItemSelected(item);
     }
 }
