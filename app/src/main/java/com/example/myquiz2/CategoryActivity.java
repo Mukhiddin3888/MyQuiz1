@@ -12,6 +12,8 @@ import android.widget.GridView;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.myquiz2.SplashActivity.catList;
+
 
 public class CategoryActivity extends AppCompatActivity {
 
@@ -29,13 +31,13 @@ public class CategoryActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
-        List<String> catList = new ArrayList<>();
+       /* List<String> catList = new ArrayList<>();
         catList.add("category 1");
         catList.add("Math 2");
         catList.add("Geography 3");
         catList.add("category3 4");
         catList.add("History 5");
-        catList.add("category5 6");
+        catList.add("category5 6");*/
 
 
         CatGridAdapter adapter = new CatGridAdapter(catList);

@@ -1,9 +1,11 @@
 package com.example.myquiz2;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.animation.Animator;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -11,22 +13,37 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.transition.Hold;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.example.myquiz2.SetsActivity.cat_id;
 
 public class QuestionActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TextView question_num, question_text, duration_time;
     private Button option1, option2, option3, option4;
     private List<Question> questionList;
-    private Integer questNum, score;
+    private int questNum, score;
     private CountDownTimer downTimer;
+    private Dialog dialog;
+
+    private int setNo;
+
+    private FirebaseFirestore firestore;
 
 
     @Override
@@ -54,20 +71,69 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
         option3.setOnClickListener(this);
         option4.setOnClickListener(this);
 
+        setNo = getIntent().getIntExtra("SetNo",1);
+
+        //initialises progress loading dialog
+        dialog = new Dialog(QuestionActivity.this);
+        dialog.setContentView(R.layout.loading_progress_bar);
+        dialog.setCancelable(false);
+
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.progress_background);
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.show();
+
+        //getting instances of   firebase firestore
+        firestore = FirebaseFirestore.getInstance();
+
         getQuestionsList();
 
     }
 
     private void getQuestionsList() {
         questionList = new ArrayList<>();
-        questionList.add(new Question("Question 1", "A", "B", "C", "D", 2));
+
+
+
+        firestore.collection("quiz1").document("Category"+ String.valueOf(cat_id))
+                .collection("Set" + String.valueOf(setNo))
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+
+                    QuerySnapshot questions = task.getResult();
+
+                    for (QueryDocumentSnapshot  doc : questions){
+
+                        questionList.add(new Question(
+                                doc.getString("Question"),
+                                doc.getString("A"),
+                                doc.getString("B"),
+                                doc.getString("C"),
+                                doc.getString("D"),
+                                Integer.valueOf(doc.getString("Answer"))
+                                ));
+
+                    }
+                    setQuestion();
+
+                }
+                else {
+                    Toast.makeText(QuestionActivity.this, task.getException().getMessage(),Toast.LENGTH_SHORT).show();
+                }
+
+                dialog.cancel();
+            }
+        });
+
+      /*  questionList.add(new Question("Question 1", "A", "B", "C", "D", 2));
         questionList.add(new Question("Question 2", "B", "A", "C", "D", 3));
         questionList.add(new Question("Question 3", "A", "B", "C", "D", 4));
         questionList.add(new Question("Question 4", "C", "B", "D", "A", 1));
         questionList.add(new Question("Question 5", "D", "B", "C", "A", 3));
         questionList.add(new Question("Question 6", "A", "C", "B", "D", 2));
+*/
 
-        setQuestion();
 
     }
 
